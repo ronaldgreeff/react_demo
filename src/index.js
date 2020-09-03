@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import { Button } from '@material-ui/core';
 
 // React efficiently update of state and props down a hierarchy of components
 // Use constructor to define the state and props
@@ -126,7 +127,7 @@ class Game extends React.Component {
       'Go to game start';
       return (
         <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          <Button onClick={() => this.jumpTo(move)}>{desc}</Button>
         </li>
       );
     });
@@ -155,6 +156,78 @@ class Game extends React.Component {
     );
   }
 }
+
+// ========================================
+// onClick Event Handling - cornerstone of React apps
+
+// Call a Function After Clicking a Button
+// function App() {
+//
+//   function sayHello() {
+//     alert('Hello!');
+//   }
+//
+//   return (
+//     <button onClick={sayHello}>
+//       Click me!
+//     </button>
+//   );
+// }
+
+// Call an Inline Function in an onClick Event Handler
+// function App() {
+//     function sayHello() {
+//       alert('Hello!');
+//     }
+//   return (
+//     <button onClick={() => sayHello()}>
+//       Click me!
+//     </button>
+//   );
+// }
+
+// Call Multiple Functions in an onClick Event Handler
+// <button onClick={() => {
+//   this.sayHello();
+//   this.setState({ name: "James"});
+// }}>
+//   Click me!
+// </button>
+//
+// <button onClick={() => {
+//   const name = 'James';
+//   alert('Hello, ', name);
+// }}>
+//   Click me!
+// </button>
+
+// Updating the State in an onClick Event Handler
+// class App extends React.Component {
+//
+//   constructor(props) {
+//     super(props);
+//     this.state = {
+//       count: 0,
+//     };
+//   }
+//
+//   render() {
+//     return (
+//       <button onClick={() => this.setState({ count: 1})}>
+//         {this.state.count}
+//       </button>
+//     );
+//   }
+// }
+
+// Pass a Button Value to an Inline Function
+// function App() {
+//   return (
+//     <button value="hello!" onClick={e => alert(e.target.value)}>
+//       Click me!
+//     </button>
+//   );
+// }
 
 // ========================================
 
