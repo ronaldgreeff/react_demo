@@ -2,6 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+// React efficiently update of state and props down a hierarchy of components
+// Use constructor to define the state and props
+//
 // always call super when defining the constructor of a subclass
 // All React component classes that have a constructor should start
 // with a super(props) call
@@ -23,6 +26,7 @@ import './index.css';
 // Convention: on[Event] for props/ events and handle[Event] for methods
 // unmutable data allows history to be stored by not modifying the original data, instead produce a new copy
 
+// square is the lowest component in the hierarchy. It's props are provided by "Board"
 function Square(props) {
   return (
     <button className="square" onClick={props.onClick}>
@@ -32,7 +36,9 @@ function Square(props) {
 }
 
 
+// Board handles lay out of 9 squares and provides Square's props
 class Board extends React.Component {
+
   renderSquare(i) {
     return (
       <Square
@@ -41,6 +47,7 @@ class Board extends React.Component {
       />
     );
   }
+
   render() {
     return (
       <div>
@@ -64,64 +71,73 @@ class Board extends React.Component {
   }
 }
 
-
+/* Where Square defines a single square component and Board defines how squares
+are layed out, Game manages what happens when you click and game history */
 class Game extends React.Component {
-  /* Constructor
-    ^history: [squares: {squares: [null,...]}],
-    ^xIsNext: true */
+
   constructor(props) {
     super(props);
     this.state = {
       history: [{
         squares: Array(9).fill(null)
       }],
-      xIsNext: true
+      stepNumber: 0,
+      xIsNext: true,
     };
   }
-  /* handleClick - method for interacting with constructor's data
+
+  /* handleClick - method for interacting with (setting) constructor's data
     history, copy squares, get current squares, calculateWinner, xIsnext */
   handleClick(i) {
-    const history = this.state.history;
+    const history = this.state.history.slice(0, this.state.stepNumber + 1); // if we do time travel, this allows us throw away the current timeline's "future" from this point
     const current = history[history.length - 1];
     const squares = current.squares.slice();
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
-    squares[i] = this.state.xIsNext ? 'X' : 'O'; // todo: check
+    squares[i] = this.state.xIsNext ? 'X' : 'O'; // if (this.state.xIsNext = true) return 'X' else return 'O'
     this.setState({
       history: history.concat([{
         squares: squares,
       }]),
+      stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
     });
   }
+
+  jumpTo(step) {
+    this.setState({
+      stepNumber: step,
+      xIsNext: (step % 2) === 0,
+    });
+  }
+
   /* render - use state and props + methods to get constants
     return xml-like structure with props and methods */
   render() {
     const history = this.state.history;
-    const current = history[history.length - 1];
-
+    const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
 
+    // history of moves each as a <li>
     const moves = history.map((step, move) => {
       const desc = move ?
       'Go to move #' + move :
       'Go to game start';
       return (
-        <li>
+        <li key={move}>
           <button onClick={() => this.jumpTo(move)}>{desc}</button>
         </li>
       );
     });
 
-    let status; // todo: check
+    // determine winner
+    let status;
     if (winner) {
       status = 'Winner: ' + winner;
     } else {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     }
-
-    // you are here https://reactjs.org/tutorial/tutorial.html#picking-a-key
 
     return (
       <div className="game">
